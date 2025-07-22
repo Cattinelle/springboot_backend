@@ -1,0 +1,223 @@
+        //Gradient Text
+        import MaskedView from "@react-native-masked-view/masked-view";
+        import { LinearGradient } from "expo-linear-gradient";
+        interface GradientTextProps {
+            text: string;
+            textClassName: string;
+            linearGradientStyle?: ViewStyle;
+            gradientColors?: [string, string];
+        }
+
+        const GradientText: React.FC<GradientTextProps> = ({
+            text,
+            textClassName,
+            linearGradientStyle,
+            gradientColors = ["#F6780C", "#C8150C"],
+        }) => {
+            return (
+                <MaskedView
+                    style={[{ height: 30, justifyContent: "center" }, linearGradientStyle]}
+                    maskElement={
+                        <View>
+                        <Text className={`${textClassName} bg-transparent`}>{text}</Text>
+                        </View>
+                    }
+                    >
+                    <LinearGradient
+                        colors={gradientColors}
+                        start={{ x: 0.5, y: 0 }}
+                        end={{ x: 0.5, y: 1 }}
+                        style={{ flex: 1 }}
+                    />
+                </MaskedView>
+            )}
+
+        //GradientButton
+        import { LinearGradient } from "expo-linear-gradient";
+        interface GradientButtonProps {
+            text: string;
+            className: string;
+            textClassName: string;
+            onPress: () => void;
+            style?: ViewStyle;
+            textStyle?: TextStyle;
+            gradientColors?: [string, string];
+            disabled?: boolean;
+        }
+
+        const GradientButton: React.FC<GradientButtonProps> = ({
+            text,
+            onPress,
+            style,
+            className,
+            textClassName,
+            gradientColors = ["#F6780C", "#C8150C"],
+            disabled = false,
+        }) => {
+            return (
+                <TouchableOpacity
+                onPress={onPress}
+                activeOpacity={0.7} // Adds the pressed opacity effect
+                disabled={disabled}
+                className={className}
+                style={style} // Ensures gradient is clipped
+                >
+                <LinearGradient
+                    colors={gradientColors}
+                    start={{ x: 0.5, y: 0 }}
+                    end={{ x: 0.5, y: 1 }}
+                    className="w-full h-full justify-center items-center"
+                >
+                    <Text className={textClassName}>{text}</Text>
+                </LinearGradient>
+                </TouchableOpacity>
+            )};
+
+
+        //Colored Button
+
+        <View className="mx-auto">
+          <ColoredButton
+          text="Colored Button"
+          textClassName="font-medium text-center py-4 px-6 rounded-lg"
+          onPress={() => console.log("Pressed!")}
+        />
+        </View>
+        
+        //Transparent Button
+
+        <View className="mx-auto">
+          <TransparentButton
+            text="Transparent Button"
+            textClassName="font-medium text-center py-4 px-6 rounded-lg"
+            onPress={() => console.log("Pressed!")}
+          />
+        </View>
+
+        //IconAndButton Button
+
+        <View className="mx-auto">
+          <IconAndButton
+            text="Add Friend"
+            textClassName="font-medium text-center rounded-lg"
+            ViewClassName="py-2 px-2 rounded-lg gap-1"
+            onPress={() => console.log("Pressed!")}
+          />
+        </View>
+
+
+{/* Modal for country picker */}
+                      <Modal
+                        isVisible={showCountryPicker}
+                        onBackdropPress={() => setShowCountryPicker(false)} // tap outside to close
+                        onBackButtonPress={() => setShowCountryPicker(false)} // Android back button
+                        swipeDirection="down" // enable swipe down
+                        onSwipeComplete={() => setShowCountryPicker(false)} // on swipe down complete
+                        style={{ margin: 0, justifyContent: "flex-end" }}
+                      >
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                          <SafeAreaView className=" bg-neutral-10 px-3 h-1/2">
+                            <Text className="text-Heading6 font-semibold text-neutral-90 mt-5 mb-3">
+                              Select your country
+                            </Text>
+                            <TextInput
+                              placeholder="Search country"
+                              value={search}
+                              onChangeText={setSearch}
+                              className="border border-neutral-30 text-neutral-90 px-4 py-3 rounded-lg mb-4"
+                            />
+
+                            <FlatList
+                              data={filteredCountries}
+                              keyExtractor={(item) => item.name}
+                              renderItem={({ item }) => (
+                                <TouchableOpacity
+                                  onPress={() => {
+                                    setCountry(item.name);
+                                    setShowCountryPicker(false);
+                                  }}
+                                  className="py-3.5 border-b border-neutral-20 flex-row items-center gap-3"
+                                >
+                                  <Image
+                                    source={{ uri: item.flag }}
+                                    style={{
+                                      width: 26,
+                                      height: 18,
+                                    }}
+                                    resizeMode="cover"
+                                  />
+                                  <Text className="text-lg text-neutral-90">
+                                    {item.name}
+                                  </Text>
+                                </TouchableOpacity>
+                              )}
+                            />
+                          </SafeAreaView>
+                        </TouchableWithoutFeedback>
+                      </Modal>
+
+
+                      ⏳ 3. Loading Indicator
+Use a loading state:
+
+tsx
+Copy
+Edit
+const [loading, setLoading] = useState(false);
+Then in your handlers:
+
+tsx
+Copy
+Edit
+setLoading(true);
+// ... API call
+setLoading(false);
+Disable button during loading:
+
+tsx
+Copy
+Edit
+<ColoredButton
+  text={loading ? "Loading..." : "Login"}
+  onPress={handleLogin}
+  disabled={loading}
+/>
+
+
+
+
+<Tabs
+      screenOptions={{
+        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        headerShown: false,
+        tabBarButton: HapticTab,
+        tabBarBackground: TabBarBackground,
+        tabBarStyle: Platform.select({
+          ios: {
+            // Use a transparent background on iOS to show the blur effect
+            position: "absolute",
+          },
+          default: {},
+        }),
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Home",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="house.fill" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="explore"
+        options={{
+          title: "Explore",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="paperplane.fill" color={color} />
+          ),
+        }}
+      />
+    </Tabs>
+
