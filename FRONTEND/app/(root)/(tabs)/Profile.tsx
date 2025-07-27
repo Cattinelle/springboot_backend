@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
@@ -50,6 +50,12 @@ const Profile = () => {
   const { hasSeenProfileToast, setHasSeenProfileToast, loadOnboardingFlags } =
     useOnboardingStore();
 
+  // Use a ref to always have the latest setHasSeenProfileToast
+  const setHasSeenProfileToastRef = useRef(setHasSeenProfileToast);
+  setHasSeenProfileToastRef.current = setHasSeenProfileToast;
+
+  const hideToast = useToastStore((state) => state.hideToast);
+
   // Local state for edit mode
   const [editRecommendations, setEditRecommendations] = useState(false);
   const [editFavorites, setEditFavorites] = useState(false);
@@ -72,28 +78,30 @@ const Profile = () => {
         type: "info",
         title: "Complete your profile",
         message: "Almost there! Finish setting up your profile.",
-        buttonText: "Set Up Now",
         icon: <Ionicons name="person-outline" size={28} color="#E95B0C" />,
+        buttonIcon: <Ionicons name="close" size={28} color="#E95B0C" />,
         backgroundColor: "#FFF7E6",
         borderColor: "#E95B0C",
         textColor: "#222",
-        duration: 5000,
         buttonOnPress: () => {
+          setHasSeenProfileToastRef.current(true);
+          hideToast();
+        },
+        toastOnPress: () => {
           router.push("/profile/Editprofile");
-          setHasSeenProfileToast(true);
+          setTimeout(() => {
+            setHasSeenProfileToastRef.current(true);
+            hideToast();
+          }, 100);
         },
         onDismiss: () => {
-          setHasSeenProfileToast(true);
+          setHasSeenProfileToastRef.current(true);
+          hideToast();
         },
+        duration: 5000,
       });
     }
-  }, [
-    hasSeenProfileToast,
-    setHasSeenProfileToast,
-    profile.name,
-    profile.country,
-    profile.bio,
-  ]);
+  }, [hasSeenProfileToast, profile.name, profile.country, profile.bio]);
 
   // Format join date
   const formatJoinDate = (dateString: string | null) => {

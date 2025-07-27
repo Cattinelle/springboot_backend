@@ -1,5 +1,12 @@
 package com.example.headway_clone.demo.dto;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ApiResponse {
     
     private boolean success;
@@ -7,18 +14,12 @@ public class ApiResponse {
     private Object data;
     
     // Constructors
-    public ApiResponse() {}
     
     public ApiResponse(boolean success, String message) {
         this.success = success;
         this.message = message;
     }
-    
-    public ApiResponse(boolean success, String message, Object data) {
-        this.success = success;
-        this.message = message;
-        this.data = data;
-    }
+    // Removed duplicate constructor to fix compilation error
     
     // Static factory methods
     public static ApiResponse success(String message) {
@@ -32,14 +33,4 @@ public class ApiResponse {
     public static ApiResponse error(String message) {
         return new ApiResponse(false, message);
     }
-    
-    // Getters and Setters
-    public boolean isSuccess() { return success; }
-    public void setSuccess(boolean success) { this.success = success; }
-    
-    public String getMessage() { return message; }
-    public void setMessage(String message) { this.message = message; }
-    
-    public Object getData() { return data; }
-    public void setData(Object data) { this.data = data; }
 }

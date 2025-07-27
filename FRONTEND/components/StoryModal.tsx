@@ -7,6 +7,7 @@ import {
   Modal,
   PanResponder,
   Platform,
+  Pressable,
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -200,7 +201,9 @@ const StoryModal = ({
           {/* Close Button */}
           <TouchableOpacity
             onPress={handleClose}
-            className="absolute top-4 z-20"
+            className="absolute top-4 z-50"
+            hitSlop={10}
+            activeOpacity={0.6}
           >
             <AntDesign name="close" size={24} color="#000" />
           </TouchableOpacity>
@@ -245,7 +248,7 @@ const StoryModal = ({
                   onBookPress(book.id);
                 }
               }}
-              className="relative flex-row justify-between items-center px-6 z-20"
+              className="relative flex-row justify-between items-center px-6 z-50"
             >
               {/* Overlapping Book Image */}
               <View className="flex-row gap-3 items-center z-20 flex-1">
@@ -280,11 +283,11 @@ const StoryModal = ({
         {/* Main Content */}
 
         {/* Tap Zones */}
-        <TouchableWithoutFeedback onPress={goToPrev}>
-          <View className="absolute top-0 left-0 bottom-0 w-1/2 z-10" />
-        </TouchableWithoutFeedback>
+        <Pressable onPress={goToPrev}>
+          <View className="absolute top-0 left-0 bottom-0 w-1/2 z-30" />
+        </Pressable>
         <TouchableWithoutFeedback onPress={goToNext}>
-          <View className="absolute top-0 right-0 bottom-0 w-1/2 z-10" />
+          <View className="absolute top-0 right-0 bottom-0 w-1/2 z-30" />
         </TouchableWithoutFeedback>
       </Animated.View>
     </Modal>

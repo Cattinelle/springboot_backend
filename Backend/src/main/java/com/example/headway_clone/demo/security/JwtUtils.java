@@ -51,17 +51,15 @@ public class JwtUtils {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        
-        String userIdStr = claims.get("userId", String.class);
-        return UUID.fromString(userIdStr);
+        return UUID.fromString(claims.get("userId", String.class));
     }
     
     public boolean validateJwtToken(String authToken) {
         try {
             Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(authToken);
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(authToken);
             return true;
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT token: {}", e.getMessage());

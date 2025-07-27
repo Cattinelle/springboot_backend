@@ -1,6 +1,5 @@
-import booksData from "@/assets/data/books.json";
 import BookCard from "@/components/BookCard";
-import { AntDesign, Feather } from "@expo/vector-icons";
+import { AntDesign, Feather, MaterialIcons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import React, { useState, useEffect } from "react";
 import {
@@ -14,9 +13,12 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  ActivityIndicator,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUserStore, Book } from "@/hooks/useUserStore";
+import { useBookStore } from "@/hooks/useBookStore";
 
 const BOOKS_PER_PAGE = 6;
 
@@ -25,8 +27,10 @@ type BookVaultProps = {
 };
 
 const BookVault: React.FC<BookVaultProps> = ({ onBookPress }) => {
+  const { books, loading, error, fetchBooks } = useBookStore();
+
   const router = useRouter();
-  const { type } = useLocalSearchParams(); // 'recommendation' or 'favorite'
+  const { type } = useLocalSearchParams();
   const { pendingAddType, addRecommendation, addFavorite, setPendingAddType } =
     useUserStore();
 
@@ -34,7 +38,13 @@ const BookVault: React.FC<BookVaultProps> = ({ onBookPress }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
 
-  const filteredBooks = booksData.filter(
+  // Fetch books on mount
+  useEffect(() => {
+    fetchBooks();
+  }, []);
+
+  // Filter and paginate books
+  const filteredBooks = books.filter(
     (book) =>
       book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       book.author.toLowerCase().includes(searchQuery.toLowerCase())
@@ -130,116 +140,146 @@ const BookVault: React.FC<BookVaultProps> = ({ onBookPress }) => {
               )}
             </View>
             <View style={{ flex: 1, marginHorizontal: "auto" }}>
-              {/* Book Grid */}
-              <FlatList
-                data={currentBooks}
-                numColumns={2}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{
-                  marginHorizontal: "auto",
-                  alignItems: "center",
-                  paddingTop: 24,
-                  paddingBottom: 24, // add space for pagination
-                }}
-                columnWrapperStyle={{
-                  justifyContent: "space-between",
-                }}
-                renderItem={({ item }) => (
-                  <View className="px-5 py-3 justify-center items-center">
-                    <TouchableOpacity>
-                      <BookCard
-                        id={item.id}
-                        title={item.title}
-                        author={item.author}
-                        cover={item.cover}
-                        onPress={() =>
-                          handleSelectBook({ ...item, id: String(item.id) })
-                        }
-                      />
-                    </TouchableOpacity>
-                  </View>
-                )}
-                ListFooterComponent={
-                  filteredBooks.length > BOOKS_PER_PAGE ? (
-                    <View className="w-full justify-center items-center">
-                      <View className="w-full justify-center items-center mt-2">
-                        <View className="py-3 flex-row justify-center items-center gap-1">
-                          {/* Left Arrow */}
-                          <TouchableOpacity
-                            onPress={() =>
-                              setCurrentPage((p) => Math.max(0, p - 1))
-                            }
-                            disabled={currentPage === 0}
-                            style={{
-                              opacity: currentPage === 0 ? 0.3 : 1,
-                              padding: 6,
-                            }}
-                          >
-                            <Feather
-                              name="chevron-left"
-                              size={24}
-                              color="#757575"
-                            />
-                          </TouchableOpacity>
-                          <View className="flex-row flex-wrap">
-                            {/* Page Numbers */}
-                            {[...Array(totalPages)].map((_, idx) => (
-                              <TouchableOpacity
-                                key={idx}
-                                onPress={() => setCurrentPage(idx)}
-                                className={`w-[38px] h-[38px] rounded-lg justify-center items-center ${
-                                  currentPage === idx
-                                    ? "bg-neutral-10"
-                                    : "bg-transparent"
-                                }`}
-                                style={{
-                                  shadowColor:
+              {/* Loading/Error State */}
+              {loading ? (
+                <ActivityIndicator
+                  size="large"
+                  color="#000"
+                  style={{ marginTop: 40 }}
+                />
+              ) : error ? (
+                <View className="flex-1 justify-start items-center mt-10">
+                  <MaterialIcons
+                    name="error-outline"
+                    size={60}
+                    color="#C8150C"
+                  />
+                  <Text className="text-center font-Manrope font-medium mt-5 text-BodyBold text-secondary">
+                    {error}
+                  </Text>
+                </View>
+              ) : (
+                <FlatList
+                  data={currentBooks}
+                  numColumns={2}
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={{
+                    marginHorizontal: "auto",
+                    alignItems: "center",
+                    paddingTop: 24,
+                    paddingBottom: 24, // add space for pagination
+                  }}
+                  columnWrapperStyle={{
+                    justifyContent: "space-between",
+                  }}
+                  renderItem={({ item }) => (
+                    <View className="px-5 py-3 justify-center items-center">
+                      <TouchableOpacity>
+                        <BookCard
+                          id={Number(item.id)}
+                          title={item.title}
+                          author={item.author}
+                          cover={
+                            item.cover ??
+                            "https://i.pinimg.com/736x/d8/94/e9/d894e93575ace5acb3eb4ab2e10f3985.jpg"
+                          } // <-- fallback to empty string if undefined
+                          onPress={() =>
+                            handleSelectBook({
+                              ...item,
+                              id: String(item.id),
+                              cover:
+                                item.cover ??
+                                "https://i.pinimg.com/736x/d8/94/e9/d894e93575ace5acb3eb4ab2e10f3985.jpg",
+                            })
+                          }
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                  ListFooterComponent={
+                    filteredBooks.length > BOOKS_PER_PAGE ? (
+                      <View className="w-full justify-center items-center">
+                        <View className="w-full justify-center items-center mt-2">
+                          <View className="py-3 flex-row justify-center items-center gap-1">
+                            {/* Left Arrow */}
+                            <TouchableOpacity
+                              onPress={() =>
+                                setCurrentPage((p) => Math.max(0, p - 1))
+                              }
+                              disabled={currentPage === 0}
+                              style={{
+                                opacity: currentPage === 0 ? 0.3 : 1,
+                                padding: 6,
+                              }}
+                            >
+                              <Feather
+                                name="chevron-left"
+                                size={24}
+                                color="#757575"
+                              />
+                            </TouchableOpacity>
+                            <View className="flex-row flex-wrap">
+                              {/* Page Numbers */}
+                              {[...Array(totalPages)].map((_, idx) => (
+                                <TouchableOpacity
+                                  key={idx}
+                                  onPress={() => setCurrentPage(idx)}
+                                  className={`w-[38px] h-[38px] rounded-lg justify-center items-center ${
                                     currentPage === idx
-                                      ? "#C2C2C2"
-                                      : "transparent",
-                                  shadowOffset: { width: 0, height: 1 },
-                                  shadowOpacity: currentPage === idx ? 0.5 : 0,
-                                  shadowRadius: 2,
-                                }}
-                              >
-                                <Text
-                                  className={`$${
-                                    currentPage === idx
-                                      ? "text-neutral-90 font-semibold text-Heading6"
-                                      : "text-neutral-50 font-medium text-BodyBold"
-                                  } font-Manrope`}
+                                      ? "bg-neutral-10"
+                                      : "bg-transparent"
+                                  }`}
+                                  style={{
+                                    shadowColor:
+                                      currentPage === idx
+                                        ? "#C2C2C2"
+                                        : "transparent",
+                                    shadowOffset: { width: 0, height: 1 },
+                                    shadowOpacity:
+                                      currentPage === idx ? 0.5 : 0,
+                                    shadowRadius: 2,
+                                  }}
                                 >
-                                  {idx + 1}
-                                </Text>
-                              </TouchableOpacity>
-                            ))}
+                                  <Text
+                                    className={`$${
+                                      currentPage === idx
+                                        ? "text-neutral-90 font-semibold text-Heading6"
+                                        : "text-neutral-50 font-medium text-BodyBold"
+                                    } font-Manrope`}
+                                  >
+                                    {idx + 1}
+                                  </Text>
+                                </TouchableOpacity>
+                              ))}
+                            </View>
+                            {/* Right Arrow */}
+                            <TouchableOpacity
+                              onPress={() =>
+                                setCurrentPage((p) =>
+                                  Math.min(totalPages - 1, p + 1)
+                                )
+                              }
+                              disabled={currentPage === totalPages - 1}
+                              style={{
+                                opacity:
+                                  currentPage === totalPages - 1 ? 0.3 : 1,
+                                padding: 6,
+                              }}
+                            >
+                              <Feather
+                                name="chevron-right"
+                                size={24}
+                                color="#757575"
+                              />
+                            </TouchableOpacity>
                           </View>
-                          {/* Right Arrow */}
-                          <TouchableOpacity
-                            onPress={() =>
-                              setCurrentPage((p) =>
-                                Math.min(totalPages - 1, p + 1)
-                              )
-                            }
-                            disabled={currentPage === totalPages - 1}
-                            style={{
-                              opacity: currentPage === totalPages - 1 ? 0.3 : 1,
-                              padding: 6,
-                            }}
-                          >
-                            <Feather
-                              name="chevron-right"
-                              size={24}
-                              color="#757575"
-                            />
-                          </TouchableOpacity>
                         </View>
                       </View>
-                    </View>
-                  ) : null
-                }
-                keyboardShouldPersistTaps="handled"
-              />
+                    ) : null
+                  }
+                  keyboardShouldPersistTaps="handled"
+                />
+              )}
             </View>
           </SafeAreaView>
         </KeyboardAvoidingView>

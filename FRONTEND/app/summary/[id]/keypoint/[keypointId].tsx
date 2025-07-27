@@ -25,6 +25,8 @@ export default function KeyPointDetailPage() {
   const currentIndex =
     book?.keyPoints.findIndex((kp) => kp.id === keyPointId) ?? 0;
 
+  const insightIndex = params.insightIndex ? Number(params.insightIndex) : 0;
+
   // Audio state
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
   const [currentAudioKeyPointId, setCurrentAudioKeyPointId] =
@@ -156,8 +158,7 @@ export default function KeyPointDetailPage() {
           showsVerticalScrollIndicator={false}
         >
           <Text className="text-Heading6  font-Manrope font-bold text-neutral-100 mb-3">
-            <Text>{keyPoint.id}.</Text>{" "}
-            {keyPoint.title}
+            <Text>{keyPoint.id}.</Text> {keyPoint.title}
           </Text>
 
           <View className="mb-6">

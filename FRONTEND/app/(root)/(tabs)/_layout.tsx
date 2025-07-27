@@ -2,7 +2,17 @@ import { Fontisto, Foundation, Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
-import { Platform, View } from "react-native";
+import { Platform, View, Pressable } from "react-native";
+
+// Custom tab bar button to properly forward ref
+const CustomTabBarButton = React.forwardRef((props: any, ref) => (
+  <Pressable
+    {...props}
+    ref={ref}
+    android_ripple={null}
+    style={[props.style, { backgroundColor: "transparent" }]}
+  />
+));
 
 const TabsLayout = () => (
   <View className="flex-1 bg-white">
@@ -18,7 +28,7 @@ const TabsLayout = () => (
         },
         tabBarStyle: {
           position: "absolute",
-          bottom: Platform.OS === "ios" ? 0 : 10,
+          bottom: Platform.OS === "ios" ? 0 : 0,
           backgroundColor: "#fff",
           borderRadius: 25,
           height: 100,
@@ -27,9 +37,10 @@ const TabsLayout = () => (
           shadowOpacity: 0.1,
           shadowRadius: 5,
           elevation: 8,
-          paddingTop: 8,
+          paddingTop: Platform.OS === "ios" ? 8 : 12,
         },
         headerShown: false,
+        tabBarButton: (props) => <CustomTabBarButton {...props} />,
       }}
     >
       <Tabs.Screen
@@ -41,7 +52,7 @@ const TabsLayout = () => (
               name="home"
               size={25}
               color={focused ? "#E95B0C" : "#616161"}
-            />
+           />
           ),
         }}
       />

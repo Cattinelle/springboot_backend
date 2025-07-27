@@ -1,15 +1,25 @@
 package com.example.headway_clone.demo.dto;
 
-public class MilestoneDto {
-    private int dailyStreak;
-    private int highlights;
-    private int booksCompleted;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-    // Getters and Setters
-    public int getDailyStreak() { return dailyStreak; }
-    public void setDailyStreak(int dailyStreak) { this.dailyStreak = dailyStreak; }
-    public int getHighlights() { return highlights; }
-    public void setHighlights(int highlights) { this.highlights = highlights; }
-    public int getBooksCompleted() { return booksCompleted; }
-    public void setBooksCompleted(int booksCompleted) { this.booksCompleted = booksCompleted; }
-} 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class MilestoneDto {
+    private UUID id;
+    private Integer dailyStreak;
+    private Integer booksCompleted;
+    private Integer totalReadingTimeMinutes;
+    private Integer keyPointsRead;
+    private LocalDateTime lastStreakDate;
+    private Integer longestStreak;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}

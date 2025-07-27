@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Switch } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
-const NotificationSettings = () => {
+const Notification = () => {
   const router = useRouter();
   const [dailyReminder, setDailyReminder] = useState(false);
   const [streakUpdates, setStreakUpdates] = useState(false);
@@ -83,4 +83,4 @@ const NotificationSettings = () => {
   );
 };
 
-export default NotificationSettings;
+export default Notification;

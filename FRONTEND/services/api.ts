@@ -15,6 +15,13 @@ const getApiConfig = () => {
   };
 };
 
+export const fetchBooks = async () => {
+  const response = await fetch("/api/books");
+  if (!response.ok) throw new Error("Failed to fetch books");
+  const books = await response.json();
+  return books;
+};
+
 class ApiService {
   private baseUrl: string;
 
@@ -175,6 +182,9 @@ class ApiService {
   /**
    * User management endpoints
    */
+
+  //get all books
+
   async getUserProfile() {
     return this.request("/users/profile");
   }
@@ -225,6 +235,8 @@ class ApiService {
   /**
    * Book management endpoints
    */
+
+  // getBooks can fetch books with optional category filtering and supports pagination via page and size parameters.
   async getBooks(category?: string, page: number = 0, size: number = 20) {
     const params = new URLSearchParams();
     if (category) params.append("category", category);
@@ -237,7 +249,12 @@ class ApiService {
   async getBookById(id: string) {
     return this.request(`/books/${id}`);
   }
+  // getAllBooks fetches all books without any filters or pagination.
+  async getAllBooks() {
+    return this.request("/books");
+  }
 
+  // addToFavorites adds a book to the user's favorites list.
   async addToFavorites(bookId: string) {
     return this.request("/users/favorites", {
       method: "POST",
@@ -351,6 +368,18 @@ class ApiService {
    */
   async getToken(): Promise<string | null> {
     return AsyncStorage.getItem("authToken");
+  }
+
+  async getAllUsers() {
+    const response = await fetch("/api/profile/all");
+    if (!response.ok) throw new Error("Failed to fetch users");
+    const users = await response.json();
+    return users.map((u: any) => ({
+      id: u.id,
+      avatar: u.avatarUrl,
+      name: `${u.firstName} ${u.lastName}`.trim(),
+      country: u.country,
+    }));
   }
 }
 

@@ -328,26 +328,26 @@ export default function BookSummary({ id }: BookSummaryProps) {
       onRequestClose={() => setShowMenu(false)}
     >
       <Pressable
-        className="flex-1 bg-transparent"
+        className="flex-1 bg-black/10"
         onPress={() => setShowMenu(false)}
       >
         <View className="flex-1 justify-center items-center">
-          <View className="bg-neutral-10 border-l border-b border-neutral-20 p-4 min-w-[200px] absolute top-[120px] right-0">
+          <View className={`bg-neutral-20 border-l border-b border-neutral-30 p-4 min-w-[200px] absolute right-0 ${Platform.OS === "ios" ? " top-[120px]" : "top-[75px]"}`}>
             {menuType === "add" ? (
               <>
-                <TouchableOpacity className="py-2 flex-row justify-center items-center gap-1.5">
+                <TouchableOpacity hitSlop={10} activeOpacity={0.7} className="py-2 flex-row justify-start items-center gap-1.5">
                   <Ionicons name="add-circle-outline" size={24} color="black" />
                   <Text className="text-neutral-80 text-BodySmallRegular font-Manrope">
-                    Add to my suggestions
+                    Add to suggestions
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity className="py-2 flex-row items-center gap-1.5">
+                <TouchableOpacity hitSlop={10} activeOpacity={0.7} className="py-2 flex-row justify-start items-center gap-1.5">
                   <Ionicons name="add-circle-outline" size={24} color="black" />
                   <Text className="text-neutral-80 text-BodySmallRegular font-Manrope">
                     Add to favorites
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity className="py-2 flex-row items-center gap-1.5">
+                <TouchableOpacity hitSlop={10} activeOpacity={0.7} className="py-2 flex-row justify-start items-center gap-1.5">
                   <Save width={24} height={24} />
                   <Text className="text-neutral-80 text-BodySmallRegular font-Manrope">
                     Save for later

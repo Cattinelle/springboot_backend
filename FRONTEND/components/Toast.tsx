@@ -47,6 +47,8 @@ const Toast: React.FC = () => {
     points,
     buttonText,
     buttonOnPress,
+    buttonIcon,
+    toastOnPress,
     hideToast,
     backgroundColor: customBg,
     borderColor: customBorder,
@@ -129,45 +131,65 @@ const Toast: React.FC = () => {
           },
         ]}
       >
-        <View style={styles.icon}>{icon}</View>
-        <View style={{ flex: 1 }}>
-          {title ? (
-            <Text style={[styles.title, { color: toastText }]}>{title}</Text>
+        <TouchableOpacity
+          onPress={() => {
+            console.log("toast pressed");
+            toastOnPress ? toastOnPress() : hideToast();
+          }}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+          activeOpacity={0.8}
+        >
+          <View style={styles.icon}>{icon}</View>
+          <View style={{ flex: 1 }}>
+            {title ? (
+              <Text style={[styles.title, { color: toastText }]}>{title}</Text>
+            ) : null}
+            {message ? (
+              <Text style={[styles.message, { color: toastText }]}>
+                {message}
+              </Text>
+            ) : null}
+            {points && points.length > 0 && (
+              <View style={{ marginTop: 6 }}>
+                {points.map((pt, idx) => (
+                  <View
+                    key={idx}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "flex-start",
+                      marginBottom: 2,
+                    }}
+                  >
+                    <Text style={styles.bullet}>{"\u2022"}</Text>
+                    <Text style={[styles.pointText, { color: toastText }]}>
+                      {pt}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+          {buttonText ? (
+            <TouchableOpacity
+              style={styles.button}
+              onPress={buttonOnPress ? buttonOnPress : hideToast}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.buttonText}>{buttonText}</Text>
+            </TouchableOpacity>
           ) : null}
-          {message ? (
-            <Text style={[styles.message, { color: toastText }]}>
-              {message}
-            </Text>
-          ) : null}
-          {points && points.length > 0 && (
-            <View style={{ marginTop: 6 }}>
-              {points.map((pt, idx) => (
-                <View
-                  key={idx}
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "flex-start",
-                    marginBottom: 2,
-                  }}
-                >
-                  <Text style={styles.bullet}>{"\u2022"}</Text>
-                  <Text style={[styles.pointText, { color: toastText }]}>
-                    {pt}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          )}
-        </View>
-        {buttonText ? (
-          <TouchableOpacity
-            style={styles.button}
-            onPress={buttonOnPress ? buttonOnPress : hideToast}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.buttonText}>{buttonText}</Text>
-          </TouchableOpacity>
-        ) : null}
+          {buttonIcon && (
+            <TouchableOpacity
+              style={styles.buttonIcon}
+              onPress={buttonOnPress ? buttonOnPress : hideToast}
+            >
+              {buttonIcon}
+            </TouchableOpacity>
+          )}{" "}
+        </TouchableOpacity>
       </Animated.View>
     </SafeAreaView>
   );
@@ -176,13 +198,13 @@ const Toast: React.FC = () => {
 const styles = StyleSheet.create({
   toast: {
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     minHeight: 60,
     maxWidth: width - 32,
     marginTop: 16,
     marginHorizontal: 16,
-    padding: 16,
-    borderRadius: 16,
+    padding: 12,
+    borderRadius: 12,
     borderWidth: 1.5,
     shadowColor: "#000",
     ...Platform.select({
@@ -234,9 +256,13 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#fff",
-    fontWeight: "bold",
-    fontSize: 14,
+    fontWeight: "semibold",
+    fontSize: 12,
     fontFamily: "Manrope-Bold",
+  },
+  buttonIcon: {
+    marginLeft: 12,
+    alignSelf: "center",
   },
 });
 

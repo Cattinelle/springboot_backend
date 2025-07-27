@@ -1,12 +1,21 @@
 package com.example.headway_clone.demo.dto;
 
-public class NotificationSettingsDto {
-    private boolean emailNotifications;
-    private boolean pushNotifications;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-    // Getters and Setters
-    public boolean isEmailNotifications() { return emailNotifications; }
-    public void setEmailNotifications(boolean emailNotifications) { this.emailNotifications = emailNotifications; }
-    public boolean isPushNotifications() { return pushNotifications; }
-    public void setPushNotifications(boolean pushNotifications) { this.pushNotifications = pushNotifications; }
-} 
+/**
+ * We are creating this DTO to handle notification settings for users.
+ * This includes streak notifications, daily reminders, and new release notifications.
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class NotificationSettingsDto {
+
+    private Boolean streakNotificationsEnabled;
+    private Boolean dailyReminderEnabled;
+    private Boolean newReleasesNotificationsEnabled;
+}

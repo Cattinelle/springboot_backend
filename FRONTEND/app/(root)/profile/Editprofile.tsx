@@ -163,11 +163,11 @@ const Editprofile = () => {
           <TouchableOpacity
             activeOpacity={0.6}
             hitSlop={10}
-            onPress={() => router.push("/profile")}
+            onPress={() => router.push("../Profile")}
           >
             <AntDesign name="arrowleft" size={24} color="black" />
           </TouchableOpacity>
-          <Text className="flex-1 text-Heading4 text-center font-Manrope font-bold text-secondary">
+          <Text className="flex-1 text-Heading5 text-center font-Manrope font-bold text-secondary">
             Edit profile
           </Text>
           <View style={{ width: 24 }} />
@@ -181,7 +181,7 @@ const Editprofile = () => {
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <ScrollView className="flex-1" keyboardShouldPersistTaps="handled">
               {/* Avatar */}
-              <View className="items-center my-10">
+              <View className="items-center gap-3 my-10">
                 <TouchableOpacity
                   onPress={handleImageUpload}
                   disabled={isLoading}
@@ -213,8 +213,20 @@ const Editprofile = () => {
                   </View>
 
                   <View className="absolute bottom-0 right-0 bg-neutral-10 rounded-full p-1.5 border border-neutral-30">
-                    <AntDesign name="edit" size={24} color="#E95B0C" />
+                    <AntDesign name="edit" size={24} color="#9e9e9e" />
                   </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  className="flex-row items-center justify-center"
+                  onPress={handleImageUpload}
+                  activeOpacity={0.4}
+                  hitSlop={10}
+                >
+                  <Text className="text-BodySmallRegular font-Manrope font-semibold text-secondary">
+                    Upload profile picture
+                  </Text>
+                  <Entypo name="chevron-small-right" size={24} color="#C8150C" />
                 </TouchableOpacity>
               </View>
               <View className="flex-column gap-5 bg-neutral-10 shadow-white-shadow rounded-t-[40px] pt-5">

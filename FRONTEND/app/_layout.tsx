@@ -33,10 +33,13 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <View className="flex-1">
         <StatusBar style="dark" />
-        <Stack screenOptions={{ headerShown: false }}>
+        <Stack screenOptions={{ headerShown: false, animation: "fade", animationDuration: 300 }}>
           <Stack.Screen name="index" />
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(root)" />
+          <Stack.Screen name="findfriends"   />
+          <Stack.Screen name="category" />
+          
           <Stack.Screen name="+not-found" />
         </Stack>
         <Toast />

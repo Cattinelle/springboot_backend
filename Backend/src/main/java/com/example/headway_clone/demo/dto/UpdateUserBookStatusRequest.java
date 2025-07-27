@@ -1,9 +1,17 @@
 package com.example.headway_clone.demo.dto;
 
-public class UpdateUserBookStatusRequest {
-    private String status;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-    // Getter and Setter
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-} 
+import java.util.UUID;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class UpdateUserBookStatusRequest {
+    private UUID userBookId;
+    private String status; // READING, SAVED_FOR_LATER, COMPLETED, NOT_STARTED
+}

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { apiService } from "@/services/api";
 
 // Types for user profile
 export interface UserProfile {
@@ -64,7 +65,7 @@ export interface UserStore {
 
   // Backend integration
   fetchUserData: () => Promise<void>;
-  syncUserData: () => Promise<void>;
+  syncUserProfile: () => Promise<void>;
   createUser: (userData: Partial<UserProfile>) => Promise<void>;
   updateProfile: (profileData: Partial<UserProfile>) => Promise<void>;
   uploadProfilePicture: (imageData: string) => Promise<void>;
@@ -221,12 +222,15 @@ export const useUserStore = create<UserStore>()((set, get) => ({
   // Backend integration
   fetchUserData: async () => {
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch("/api/user/profile");
-      const userData = await response.json();
-
+      const userData = await apiService.getUserProfile();
       set({
-        profile: userData.profile,
+        profile: {
+          name: userData.name,
+          profilePic: userData.avatar,
+          country: userData.country,
+          bio: userData.bio,
+          joinDate: userData.joinDate,
+        },
         joinDate: userData.joinDate,
         readingGoal: userData.readingGoal,
         streak: userData.streak,
@@ -239,45 +243,30 @@ export const useUserStore = create<UserStore>()((set, get) => ({
       });
     } catch (error) {
       console.error("Failed to fetch user data:", error);
-      // Keep existing state on error
     }
   },
 
-  syncUserData: async () => {
+  // Only sync profile fields that the backend expects
+  syncUserProfile: async () => {
     try {
       const state = get();
-      // TODO: Replace with actual API call
-      await fetch("/api/user/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          profile: state.profile,
-          readingGoal: state.readingGoal,
-          streak: state.streak,
-          booksCompleted: state.booksCompleted,
-          recommendations: state.recommendations,
-          favorites: state.favorites,
-          reading: state.reading,
-          savedForLater: state.savedForLater,
-          completed: state.completed,
-        }),
+      await apiService.updateUserProfile({
+        name: state.profile.name,
+        bio: state.profile.bio,
+        country: state.profile.country,
+        avatar: state.profile.profilePic || undefined,
       });
     } catch (error) {
-      console.error("Failed to sync user data:", error);
+      console.error("Failed to sync user profile:", error);
     }
   },
 
   createUser: async (userData: Partial<UserProfile>) => {
     try {
       const joinDate = new Date().toISOString();
-      // TODO: Replace with actual API call
-      await fetch("/api/user/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...userData,
-          joinDate,
-        }),
+      await apiService.createUser({
+        ...userData,
+        joinDate,
       });
 
       set({
@@ -291,15 +280,12 @@ export const useUserStore = create<UserStore>()((set, get) => ({
 
   updateProfile: async (profileData: Partial<UserProfile>) => {
     try {
-      // TODO: Replace with actual API call
-      await fetch("/api/user/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profileData),
-      });
-
+      const updated = await apiService.updateUserProfile(profileData);
       set({
-        profile: { ...get().profile, ...profileData },
+        profile: {
+          ...get().profile,
+          ...updated,
+        },
       });
     } catch (error) {
       console.error("Failed to update profile:", error);
@@ -309,17 +295,9 @@ export const useUserStore = create<UserStore>()((set, get) => ({
 
   uploadProfilePicture: async (imageData: string) => {
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch("/api/user/avatar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageData }),
-      });
-
-      const data = await response.json();
-
+      const data = await apiService.uploadAvatar(imageData);
       set({
-        profile: { ...get().profile, profilePic: data.avatarUrl },
+        profile: { ...get().profile, profilePic: data.avatar },
       });
     } catch (error) {
       console.error("Failed to upload profile picture:", error);
@@ -332,110 +310,30 @@ export const useUserStore = create<UserStore>()((set, get) => ({
   sentRequests: [],
   receivedRequests: [],
   sendFriendRequest: async (userId) => {
-    // TODO: Replace with real API call
-    await new Promise((res) => setTimeout(res, 300));
-    set((state) => ({ sentRequests: [...state.sentRequests, userId] }));
+    await apiService.sendFriendRequest(userId);
   },
   cancelFriendRequest: async (userId) => {
-    // TODO: Replace with real API call
-    await new Promise((res) => setTimeout(res, 300));
-    set((state) => ({
-      sentRequests: state.sentRequests.filter((id) => id !== userId),
-    }));
+    await apiService.cancelFriendRequest(userId);
   },
   acceptFriendRequest: async (userId) => {
-    // TODO: Replace with real API call
-    await new Promise((res) => setTimeout(res, 300));
-    set((state) => ({
-      friends: [...state.friends, userId],
-      receivedRequests: state.receivedRequests.filter((id) => id !== userId),
-    }));
+    await apiService.acceptFriendRequest(userId);
   },
   declineFriendRequest: async (userId) => {
-    // TODO: Replace with real API call
-    await new Promise((res) => setTimeout(res, 300));
-    set((state) => ({
-      receivedRequests: state.receivedRequests.filter((id) => id !== userId),
-    }));
+    await apiService.declineFriendRequest(userId);
   },
   removeFriend: async (userId) => {
-    // TODO: Replace with real API call
-    await new Promise((res) => setTimeout(res, 300));
-    set((state) => ({ friends: state.friends.filter((id) => id !== userId) }));
+    await apiService.removeFriend(userId);
   },
   fetchFriendsAndRequests: async () => {
-    // TODO: Replace with real API call
-    // Example: const data = await fetch('/api/user/friends-requests').then(res => res.json());
-    // set({ friends: data.friends, sentRequests: data.sentRequests, receivedRequests: data.receivedRequests });
+    const { friends, sentRequests, receivedRequests } =
+      await apiService.getFriendsAndRequests();
+    set({ friends, sentRequests, receivedRequests });
   },
 
   // All users (for friend search, explore, etc)
   allUsers: [],
   fetchAllUsers: async () => {
-    // TODO: Replace with real API call
-    // For now, mock with static users
-    const users = [
-      {
-        id: "1",
-        avatar: "https://randomuser.me/api/portraits/women/1.jpg",
-        name: "Mary Smith",
-        country: "United States",
-      },
-      {
-        id: "2",
-        avatar: "https://randomuser.me/api/portraits/men/2.jpg",
-        name: "Michael Flynn",
-        country: "Jamaica",
-      },
-      {
-        id: "3",
-        avatar: "https://randomuser.me/api/portraits/men/3.jpg",
-        name: "John Doe",
-        country: "Canada",
-      },
-      {
-        id: "4",
-        avatar: "https://randomuser.me/api/portraits/women/4.jpg",
-        name: "Jane Lee",
-        country: "UK",
-      },
-      {
-        id: "5",
-        avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-        name: "Carlos Ruiz",
-        country: "Mexico",
-      },
-      {
-        id: "6",
-        avatar: "https://randomuser.me/api/portraits/women/6.jpg",
-        name: "Aisha Bello",
-        country: "Nigeria",
-      },
-      {
-        id: "7",
-        avatar: "https://randomuser.me/api/portraits/men/7.jpg",
-        name: "Lars Svensson",
-        country: "Sweden",
-      },
-      {
-        id: "8",
-        avatar: "https://randomuser.me/api/portraits/women/8.jpg",
-        name: "Sofia Rossi",
-        country: "Italy",
-      },
-      {
-        id: "9",
-        avatar: "https://randomuser.me/api/portraits/men/9.jpg",
-        name: "Kenji Tanaka",
-        country: "Japan",
-      },
-      {
-        id: "10",
-        avatar: "https://randomuser.me/api/portraits/women/10.jpg",
-        name: "Fatima Zahra",
-        country: "Morocco",
-      },
-    ];
+    const users = await apiService.getAllUsers();
     set({ allUsers: users });
   },
 }));

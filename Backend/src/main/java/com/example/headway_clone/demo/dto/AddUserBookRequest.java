@@ -1,18 +1,28 @@
 package com.example.headway_clone.demo.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * We are creating this AddUserBookRequest DTO to handle adding books to user's library.
+ * Updated to use Long bookId to match the Book entity's primary key type.
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddUserBookRequest {
-    private String bookTitle;
-    private String author;
-    private String coverImageUrl;
+    // Book ID using Long to match Book entity's primary key
+    private Long bookId;
+
+    // Reading status when adding the book (READING, SAVED_FOR_LATER, NOT_STARTED)
     private String status;
 
-    // Getters and Setters
-    public String getBookTitle() { return bookTitle; }
-    public void setBookTitle(String bookTitle) { this.bookTitle = bookTitle; }
-    public String getAuthor() { return author; }
-    public void setAuthor(String author) { this.author = author; }
-    public String getCoverImageUrl() { return coverImageUrl; }
-    public void setCoverImageUrl(String coverImageUrl) { this.coverImageUrl = coverImageUrl; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-} 
+    // Whether to mark as favorite when adding
+    private Boolean isFavorite = false;
+
+    // Whether this is a recommended book
+    private Boolean isRecommended = false;
+}

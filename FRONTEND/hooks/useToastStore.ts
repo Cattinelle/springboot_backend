@@ -11,6 +11,8 @@ interface ToastState {
   duration?: number;
   buttonText?: string;
   buttonOnPress?: () => void;
+  buttonIcon?: React.ReactNode;
+  toastOnPress?: () => void;
   onDismiss?: () => void;
   timerId?: NodeJS.Timeout | null;
   backgroundColor?: string;
@@ -24,6 +26,8 @@ interface ToastState {
     points?: string[];
     duration?: number;
     buttonText?: string;
+    buttonIcon?: React.ReactNode;
+    toastOnPress?: () => void;
     onDismiss?: () => void;
     backgroundColor?: string;
     borderColor?: string;
@@ -43,6 +47,7 @@ export const useToastStore = create<ToastState>((set, get) => ({
   duration: undefined,
   buttonText: undefined,
   onDismiss: undefined,
+  toastOnPress: undefined,
   timerId: null,
   buttonOnPress: undefined,
   icon: undefined,
@@ -52,7 +57,9 @@ export const useToastStore = create<ToastState>((set, get) => ({
     message,
     points,
     duration,
+    toastOnPress,
     buttonText,
+    buttonIcon,
     onDismiss,
     backgroundColor,
     borderColor,
@@ -77,6 +84,8 @@ export const useToastStore = create<ToastState>((set, get) => ({
       points,
       duration,
       buttonText,
+      buttonIcon,
+      toastOnPress,
       onDismiss,
       timerId: newTimerId as unknown as NodeJS.Timeout,
       backgroundColor,
@@ -97,7 +106,9 @@ export const useToastStore = create<ToastState>((set, get) => ({
       points: undefined,
       duration: undefined,
       buttonText: undefined,
+      buttonIcon: undefined,
       onDismiss: undefined,
+      toastOnPress: undefined,
       timerId: null,
       icon: undefined,
     });

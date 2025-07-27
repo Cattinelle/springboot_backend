@@ -1,39 +1,57 @@
 package com.example.headway_clone.demo.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * We are creating this PasswordResetToken entity to handle OTP-based password reset functionality.
+ * This entity stores 4-digit OTP codes that expire in 5 minutes for secure password reset.
+ */
 @Entity
-@Table(name = "password_reset_tokens")
+@Table(name = "passwordResetToken")
+@Data // Lombok annotation that generates getters, setters, equals, hashCode, and toString
+@Builder // Lombok annotation for builder pattern
+@NoArgsConstructor // Lombok annotation for default constructor
+@AllArgsConstructor // Lombok annotation for constructor with all fields
 public class PasswordResetToken {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @Column(nullable = false, unique = true)
-    private String token;
+    private UUID id; // Primary key for the token
 
     @Column(nullable = false)
-    private LocalDateTime expiryDate;
+    private String email; // Email address for which the OTP was generated
 
-    public PasswordResetToken() {}
-    public PasswordResetToken(User user, String token, LocalDateTime expiryDate) {
-        this.user = user;
-        this.token = token;
-        this.expiryDate = expiryDate;
+    @Column(nullable = false, length = 4)
+    private String otp; // 4-digit OTP code (1000-9999)
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt; // When the OTP was created
+
+    @Column(nullable = false)
+    private LocalDateTime expiresAt; // When the OTP expires (5 minutes from creation)
+
+    @Column(nullable = false)
+    private boolean used = false; // Whether the OTP has been used for password reset
+
+    /**
+     * Checks if the OTP token is still valid (not expired and not used)
+     * @return true if the token is valid, false otherwise
+     */
+    public boolean isValid() {
+        return !used && LocalDateTime.now().isBefore(expiresAt);
     }
 
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
-    public String getToken() { return token; }
-    public void setToken(String token) { this.token = token; }
-    public LocalDateTime getExpiryDate() { return expiryDate; }
-    public void setExpiryDate(LocalDateTime expiryDate) { this.expiryDate = expiryDate; }
-} 
+    /**
+     * Marks the token as used to prevent reuse
+     */
+    public void markAsUsed() {
+        this.used = true;
+    }
+}
